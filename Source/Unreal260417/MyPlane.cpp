@@ -9,6 +9,8 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyPlane::AMyPlane()
@@ -62,11 +64,42 @@ void AMyPlane::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	UEnhancedInputComponent* UIC = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (UIC)
+	{
+		UIC->BindAction(IA_Rotation, ETriggerEvent::Triggered, this, &AMyPlane::Rotate);
+		UIC->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &AMyPlane::Fire);
+		UIC->BindAction(IA_Boost, ETriggerEvent::Triggered, this, &AMyPlane::Boost);
+		UIC->BindAction(IA_Boost, ETriggerEvent::Completed, this, &AMyPlane::UnBoost);
+	}
 }
 
 void AMyPlane::AddPropellerRotate(float DeltaTime)
 {
 	LeftPropeller->AddRelativeRotation(FRotator(0.0f, 0.0f, PropellerSpeed * DeltaTime));
 	RightPropeller->AddRelativeRotation(FRotator(0.0f, 0.0f, PropellerSpeed * DeltaTime));
+}
+
+void AMyPlane::Rotate(const FInputActionValue& Value)
+{
+	FVector2D Rot = Value.Get<FVector2D>();
+	Rot = Rot * RotateSpeed * UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
+
+	AddActorLocalRotation(FRotator(Rot.Y, 0.0f, Rot.X));
+}
+
+void AMyPlane::Fire(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("빵야"));
+}
+
+void AMyPlane::Boost(const FInputActionValue& Value)
+{
+	BoostValue = 1.0f;
+}
+
+void AMyPlane::UnBoost(const FInputActionValue& Value)
+{
+	BoostValue = 0.5f;
 }
 

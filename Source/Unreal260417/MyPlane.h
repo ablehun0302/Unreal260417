@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include <EnhancedInputLibrary.h>
+#include "InputAction.h"
 #include "MyPlane.generated.h"
 
 class UBoxComponent;
@@ -35,6 +37,14 @@ public:
 
 	void AddPropellerRotate(float DeltaTime);
 
+	void Rotate(const FInputActionValue& Value);
+
+	void Fire(const FInputActionValue& Value);
+
+	void Boost(const FInputActionValue& Value);
+
+	void UnBoost(const FInputActionValue& Value);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UBoxComponent> Box;
 	
@@ -59,6 +69,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
 
+	float RotateSpeed = 60.0f;
 	float BoostValue = 0.5f;
 	float PropellerSpeed = 1800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Rotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Fire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Boost;
 };
